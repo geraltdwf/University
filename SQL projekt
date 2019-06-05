@@ -1,0 +1,109 @@
+SET client_encoding ='utf-8';
+---------------------------------------------------------------------------------
+--UTWORZENIE TABELI TOWARZYSTWA UBEZPIECZENIOWEGO--------------------------------
+--WIELE TOWARZYSTW UBEZPIECZENIOWYCH POSIADA WIELE POLIS UBEZPIECZENIOWYCH-------
+--JEDNO TOWARZYSTO, UDZIELA 1 LUB WIECEJ LICENCJI--------------------------------
+---------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS TOWARZYSTWO_UBEZPIECZENIOWE
+(
+    KRS                       CHAR(10)        NOT NULL,
+    NAZWA_PRZEDSIEBIORSTWA    VARCHAR(32)     NOT NULL,
+    ULICA_DOM                 VARCHAR(64),
+    MIASTO                    VARCHAR(32),
+    KOD_POCZTOWY              CHAR(6),
+    FORMA_PRAWNA              VARCHAR(32),
+    FILIA                     VARCHAR(32)     NOT NULL,
+    CONSTRAINT                TOWARZYSTWO_UBEZPIECZENIOWE_PK PRIMARY KEY(KRS)
+);
+---------------------------------------------------------------------------------
+--UTWORZENIE TABELI DORADCY_FINANSOWEGO------------------------------------------
+--JEDEN DORADCA MOZE POSIADA WIELE LIENCJI NA PRODUKTY DANEGO TOWARZYSTWA--------
+--DORADCA OBSLUGUJE WIELU KLIENTU, A TAKZE KLIENT MOZE POSIADAC WIELU DORADCOW---
+---------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS DORADCA_FINANSOWY
+(
+    ID_DORADCY             CHAR(10)    NOT NULL UNIQUE,
+    IMIE                   VARCHAR(32) NOT NULL,
+    NAZWISKO               VARCHAR(32) NOT NULL,
+    ODDZIAL                VARCHAR(32) NOT NULL,
+    TELEFON                VARCHAR(11) NOT NULL,
+    PRZELICZNIK_PLACOWY    CHAR(2),
+    CONSTRAINT             DORADCA_FINANSOWY_PK PRIMARY KEY(ID_DORADCY)
+
+);
+---------------------------------------------------------------------------------
+--STWORZ TABELE LICENCJA JEZELI NIE ISTNIEJE-------------------------------------
+--JEDNO TOWARZYSTWO, MOZE UDZIELIC 1 LUB WIECEJ LICENCJI-------------------------
+--JEDNA LICENCJA MOZE BYC PRZYPISANA TYLKO DO JEDNEGO DORADCY FINANSOWEGO--------
+---------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS LICENCJA
+(
+    ID_LICENCJI            CHAR(10)     NOT NULL,
+    DATA_WYDANIA           DATE        NOT NULL,
+    RODZAJ                 VARCHAR(32) NOT NULL,
+    ID_DORADCY             CHAR(10),
+    KRS                    CHAR(10),
+    CONSTRAINT             LICENCJA_PK PRIMARY KEY(ID_LICENCJI),
+    CONSTRAINT             LICENCJA_FK FOREIGN KEY(ID_DORADCY)
+                           REFERENCES DORADCA_FINANSOWY(ID_DORADCY)
+                           ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT             LICENCJA_UB_FK FOREIGN KEY(KRS)
+                           REFERENCES TOWARZYSTWO_UBEZPIECZENIOWE(KRS)
+                           ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+--UTWORZENIE TABELI KLIENT
+CREATE TABLE IF NOT EXISTS KLIENT
+(
+     PESEL                 CHAR(11)    NOT NULL UNIQUE,
+     IMIE                  VARCHAR(32) NOT NULL,
+     NAZWISKO              VARCHAR(32) NOT NULL,
+     MSC_ZAROBKI_PLN_NETTO NUMERIC(7,2),
+     ULICA_DOM             VARCHAR(64),
+     MIASTO                VARCHAR(32),
+     KOD_POCZTOWY          CHAR(6),
+     TELEFON               VARCHAR(11),
+     CONSTRAINT            KLIENT_PK PRIMARY KEY(PESEL),
+     CONSTRAINT            KLIENT_TELEFON_UQ UNIQUE(TELEFON)
+);
+
+--------------------------------------------------------------------------------------
+-- UTWORZENIE RELACJI POMIEDZY KLIETEM A DORADCA--------------------------------------
+--------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS JEST_OBSLUGIWANY
+(
+    ID_DORADCY_nr         CHAR(11) NOT NULL,
+    PESEL_nr               CHAR(11) NOT NULL,
+    PRIMARY KEY            (ID_DORADCY_nr, PESEL_nr),
+    CONSTRAINT             JEST_OBSLUGIWANY_ID_DORADCA_FK FOREIGN KEY(ID_DORADCY_nr) 
+                           REFERENCES DORADCA_FINANSOWY(ID_DORADCY)
+                           ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT             JEST_OBSLUGIWANY_PESEL_FK FOREIGN KEY(PESEL_nr)
+                           REFERENCES KLIENT(PESEL)
+                           ON UPDATE CASCADE ON DELETE CASCADE                         
+);
+
+--------------------------------------------------------------------------------------
+--UTWORZENIE RELACJI POMIEDZY TOWARZYSTEM, KLIENTEM, DORADCA, A POLISA UBEZPIECZENIOWA
+--------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS POLISA_UB
+(
+    NR_POLISY              VARCHAR(11) NOT NULL,
+    SKLADKA                NUMERIC(9,2) NOT NULL,
+    RODZAJ_POLISY          VARCHAR(32) NOT NULL,
+    SUMA_UBEZPIECZENIA     NUMERIC(9,2),
+    DATA_WYGASNIECIA       VARCHAR(10),
+    PESEL                  CHAR(11) NOT NULL,
+    ID_DORADCY             CHAR(11) NOT NULL,
+    KRS_NR                 CHAR(10) NOT NULL,
+    CONSTRAINT             POLISA_UB_PK PRIMARY KEY(NR_POLISY, PESEL, ID_DORADCY, KRS_NR),
+    CONSTRAINT             PESEL_OBSLUGA_FK FOREIGN KEY(PESEL) 
+                           REFERENCES KLIENT(PESEL) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT             ID_DORADCY_FK FOREIGN KEY(ID_DORADCY)
+                           REFERENCES DORADCA_FINANSOWY(ID_DORADCY) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT             KRS_FK FOREIGN KEY(KRS_NR)
+                           REFERENCES TOWARZYSTWO_UBEZPIECZENIOWE(KRS) ON UPDATE CASCADE ON DELETE CASCADE
+
+);
