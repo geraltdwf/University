@@ -1,0 +1,77 @@
+using System;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
+
+/*
+Napisz program, który wczytuje graf podany jako lista sąsiedztwa i wyświetla macierz sąsiedztwa danego grafu.
+*/
+namespace Adjacency_list_8._1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<int, List<string>> adjacency_list = new Dictionary<int, List<string>>();
+            int i = 0;
+            string[] matrix;
+            matrix = Console.ReadLine().TrimEnd().Split(' ');
+            matrix[i].TrimEnd();
+            adjacency_list[i] = new List<string>();
+            adjacency_list[i] = matrix.ToList();
+            i++;
+            while (!string.IsNullOrEmpty(matrix[0]))
+            {
+                try
+                {
+                    matrix = Console.ReadLine().TrimEnd().Split(' ');
+                    adjacency_list[i] = new List<string>();
+                    adjacency_list[i] = matrix.ToList();
+                    i++;
+                }
+                catch (NullReferenceException)
+                {
+                    break;
+                }
+            }
+            string[][] matrix_output = new string[adjacency_list.Count][];
+            for(int j = 0; j < matrix_output.Length; j++)
+            {
+                matrix_output[j] = new string[matrix_output.Length];
+            }
+            for(int j = 0; j < adjacency_list.Count; j++)
+            {
+                for(int n = 0; n < adjacency_list.Count;  n++)
+                {
+                        if (adjacency_list[j].Contains((n+1).ToString()) && adjacency_list[j][0] != (n+1).ToString())
+                        {
+                            matrix_output[j][n] = "1";   
+                        }
+                        else
+                        {
+                            matrix_output[j][n] = "0";
+                        }
+                    
+                    
+                }
+            }
+            for(int j = 0; j < adjacency_list.Count; j++)
+            {
+                for(int k = 0; k < adjacency_list.Count; k++)
+                {
+                    if (k == adjacency_list.Count-1)
+                     {
+                          Console.Write(matrix_output[j][k]);
+                        }
+                         else
+                        {
+                                Console.Write(matrix_output[j][k]+ " ");
+                        }
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+}
