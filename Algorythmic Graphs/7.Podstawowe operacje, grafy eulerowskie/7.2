@@ -1,8 +1,12 @@
 using System;
 /*
-Napisz program, który wczyta od użytkownika macierz sasiędztwa, a następnie numer wierzchołka (oznaczmy go jako a). Wynikiem programu ma być wypisanie sąsiadów wierzchołka a.
+Napisz program, który dla danego grafu w macierzy sąsiedztwa dodaje krawędź/łuk tego grafu.
 
-W przypadku błędnych danych (mowa tutaj o numerze wierzchołka) program ma wypisać komunikat BŁĄD!!! oraz ma zakończyć działanie.
+Program wczytuje macierz sąsiedztwa a następnie pobiera argument (para wierzchołków reprezentująca krawędź). Wynikiem programu jest macierz sąsiedztwa z dodaną krawędzią.
+
+Domyślnie zakładamy, że krawędź jest dodawana w grafie nieskierowanym, w przypadku dodania łuku pobieramy dodatkową informacje (Znak T) w argumentach pobierania krawędzi.
+
+W przypadku błędnych danych (pary wierzchołków) program ma wypisać komunikat BŁĄD i ma zakończyć działanie.
 */
 namespace Zad._1
 {
