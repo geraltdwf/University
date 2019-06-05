@@ -1,0 +1,74 @@
+using System;
+/*
+Napisz program, który wczyta od użytkownika macierz sasiędztwa, a następnie numer wierzchołka (oznaczmy go jako a). Wynikiem programu ma być wypisanie sąsiadów wierzchołka a.
+
+W przypadku błędnych danych (mowa tutaj o numerze wierzchołka) program ma wypisać komunikat BŁĄD!!! oraz ma zakończyć działanie.
+*/
+namespace Zad._1
+{
+    class MainClass
+    {
+
+        static void Main()
+        {
+           // string z = "";
+            int vertex = 0;
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length][];
+            matrix[0] = new string[0];
+            matrix[0] = pre_matrix;
+            for (int i = 1; i < matrix.Length; i++)
+            {
+
+                matrix[i] = new string[vertex];
+                matrix[i] = Console.ReadLine().Split(' ');
+                vertex += 1;
+
+            }
+            string []y = Console.ReadLine().Split(' ');
+            int y_0 = Convert.ToInt32(y[0]);
+            int y_1 = Convert.ToInt32(y[1]);
+            try
+            {
+               
+                if ((y_0 > matrix.Length || y_0 <= 0) || y_1 > matrix.Length || y_1 <= 0)
+                {
+                    Console.Write("BŁĄD");
+
+                }
+                else
+                {
+                    if (y[y.Length-1].Contains("T"))
+                    {
+                        matrix[y_0 - 1][y_1 - 1] = "1";
+                    }
+                    else
+                    {
+                        matrix[y_0 - 1][y_1 - 1] = "1";
+                        matrix[y_1 - 1][y_0 - 1] = "1";
+                    }
+                    for (int i = 0; i < matrix.Length; i++)
+                    {
+                        for (int j = 0; j < matrix[i].Length; j++)
+                        {
+                            if (j == matrix.Length - 1)
+                            {
+                                Console.Write(matrix[i][j]);
+                            }
+                            else
+                            {
+                                Console.Write(matrix[i][j] + " ");
+                            }
+                        }
+                        Console.WriteLine();
+                    }
+                }
+            }
+            catch(SystemException x)
+            {
+                Console.WriteLine(x.Message);
+            }
+
+        }
+    }
+}
