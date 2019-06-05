@@ -1,0 +1,53 @@
+using System;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
+
+/*
+Napisz program, który wczytuje graf nieskierowany podany jako lista sąsiedztwa i oblicza średni stopień całego grafu.
+*/
+namespace Adjacency_list_8._1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<int, List<string>> adjacency_list = new Dictionary<int, List<string>>();
+            int i = 0;
+            double avg_of_graph = 0;
+            double value;
+            //StreamReader stream = new StreamReader("Adjacency.txt");
+            string[] matrix;
+            matrix = Console.ReadLine().TrimEnd().Split(' ');
+            matrix[i].TrimEnd();
+            adjacency_list[i] = new List<string>();
+            adjacency_list[i] = matrix.ToList();
+            i++;
+            while (!string.IsNullOrEmpty(matrix[0]))
+            {
+                try
+                {
+                    matrix = Console.ReadLine().TrimEnd().Split(' ');
+                    adjacency_list[i] = new List<string>();
+                    adjacency_list[i] = matrix.ToList();
+                    i++;
+                }
+                catch (NullReferenceException)
+                {
+                    break;
+                }
+            }
+            for (int j = 0; j < adjacency_list.Count; j++)
+            {
+                avg_of_graph += adjacency_list[j].Count - 1;
+            }
+            avg_of_graph /= adjacency_list.Count;
+            Console.WriteLine(string.Format("{0:0.0##}", Math.Round(avg_of_graph, 2,                               MidpointRounding.AwayFromZero)));
+
+
+        }
+    }
+}
+
