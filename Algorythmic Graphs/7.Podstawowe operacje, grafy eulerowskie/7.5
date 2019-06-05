@@ -1,0 +1,139 @@
+using System;
+using System.Collections;
+ /*
+ Napisz program, który wczytuje od użytkownika macierz sąsiedztwa, następnie numer wierzchołka, i przeprowadza przeszukiwanie w głąb tego grafu. Wynikiem ma być kolejność odwiedzanych wierzchołków w tym grafie oraz infromacja czy graf jest spójny czy nie.
+
+W przypadku błędnych danych program ma wypisać komunikat: BŁĄD i ma zakończyc działanie.
+ */
+
+namespace Graf_DFS
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            int vertex = 0;
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length][];
+            matrix[0] = pre_matrix;
+            vertex += 1;
+            for (int i = 1; i < pre_matrix.Length; i++)
+            {
+                matrix[i] = new string[vertex];
+                matrix[i] = Console.ReadLine().Split(' ');
+                vertex += 1;
+            }
+            bool[,] visited_vertex = new bool[matrix.Length, matrix.Length];
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    visited_vertex[i, j] = false;
+                }
+            }
+            check(matrix, visited_vertex); // sprawdz czy jest spojny
+        }
+        public static void check(string[][] matrix, bool[,] visited)
+        {
+            int begin_vert = Convert.ToInt32(Console.ReadLine());
+            if (begin_vert - 1 < 0 || begin_vert - 1 > matrix.Length)
+            {
+                Console.WriteLine("BŁĄD");
+
+            }
+            else
+            {
+                spojnosc(matrix, visited, begin_vert - 1);
+
+            }
+        }
+        public static void fill(bool[,] visited, int i, string[][]matrix)
+        {
+            for(int j = 0; j < matrix.Length; j++)
+            {
+                    visited[i, j] = true;
+            }
+            
+        }
+        public static void DFS(string[][]matrix, bool[,]visited, int being_vert)
+        {
+            ArrayList stos = new ArrayList();
+            int vertex = 0; // zmienna do liczenia odwiedzonych wierzchołkow
+            for (int i = being_vert; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    
+                    if (matrix[i][j] == "1" && (visited[i, j] == false && visited[j,i] == false))
+                    {    
+                        
+                            stos.Add(i+1);
+                            fill(visited, i, matrix);
+                            visited[j, i] = true;
+                            i = j;
+                            j = 0;
+                            vertex += 1;
+
+                    }
+                    
+                    
+                    if (vertex == matrix[i].Length-1)
+                    {
+                        stos.Add(vertex+1);
+                        break;
+                    }
+
+                }
+
+            }
+            Console.Write("Porządek DFS: ");
+            for(int i = 0; i < matrix.Length; i++)
+            {
+                if(i == matrix.Length-1)
+                {
+                    Console.Write(stos[i]);
+                }
+                else
+                {
+                    Console.Write(stos[i] + " ");
+                }
+            }
+            Console.WriteLine();
+        }
+        public static void spojnosc(string [][]matrix, bool[,]visited, int begin_vert)
+        {
+            bool[] connectivity = new bool[matrix.Length]; // tablica do sprawdzenia spójności grafu
+     
+            for(int i = 0; i < matrix.Length; i++)
+            {
+                for(int j = 0; j<matrix[i].Length;j++)
+                {
+                    if (matrix[i][j] == "1")
+                    {
+                        connectivity[i] = true; // Jezeli w danym calym wierszu/kolumnie wystepuje krawedz
+                        j = matrix.Length - 1; // Przejdz na koniec petli
+                    }
+                   
+
+                }
+            }
+            for(int i = 0; i < connectivity.Length; i++)
+            {
+                if(connectivity[i] == false)
+                {
+
+                    Console.WriteLine("Graf jest niespójny");
+                    break;
+                }
+                else
+                {
+                    DFS(matrix, visited, begin_vert); // Porzadek DFS
+                    Console.WriteLine("Graf jest spójny");
+                    break;
+                }
+            }
+
+        }
+    }
+}
