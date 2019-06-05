@@ -1,0 +1,60 @@
+using System;
+/*
+Napisz program, który dodaje wierzchołek wraz z krawędziami do grafu nieskierowanego reprezentowany jako macierz sąsiedztwa.
+
+Program wczytuje macierz sąsiedztwa a następnie pobiera wiersz macierzy z nowym wierzchołkiem. Wynikiem programu jest macierz sąsiedztwa z dodanym wierzchołkiem. Zakładamy, że dodajemy wierzchołek zawsze na końcu macierzy.
+*/
+namespace Zad._1
+{
+    class MainClass
+    {
+
+        static void Main()
+        {
+            int vertex = 0;
+            int j = 0; // zmienna potrzebna do T
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length+1][];
+            matrix[0] = new string[0];
+            matrix[0] = pre_matrix;
+            for (int i = 1; i < matrix.Length; i++)
+            {
+               
+                    matrix[i] = new string[vertex];
+                    matrix[i] = Console.ReadLine().Split(' ');
+                    vertex += 1;
+                
+            }
+            
+            for(int i = 0; i < matrix.Length; i++)
+            {
+                Array.Resize(ref matrix[i], matrix[i].Length + 1);
+                matrix[i][matrix.Length - 1] = matrix[matrix.Length -1][j];
+                 if(j < matrix.Length)
+                {
+                    j++;
+                }
+                 else
+                {
+                    break;
+                }
+               
+            }
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int k = 0; k < matrix[i].Length; k++)
+                {
+                    if (k == matrix.Length - 1)
+                    {
+                        Console.Write(matrix[i][k].Trim());
+                    }
+                    else
+                    {
+                        Console.Write(matrix[i][k] + " ");
+                    }
+                }
+                Console.Write('\n');
+            }
+        }
+    }
+}
