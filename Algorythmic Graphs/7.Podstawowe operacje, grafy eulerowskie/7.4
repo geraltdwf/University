@@ -1,0 +1,81 @@
+using System;
+/*
+Napisz program, który pobiera od użytkownika graf reprezentowany jako macierz sąsiedztwa, a następnie numer wierzchołka grafu (oznaczmy go jako a).
+
+Następnie program ma usunąć wierzchołek (wraz z incydentnymi krawędziami) z grafu. Wynikiem programu ma być wyświetlona macierz sąsiedztwa bez wymaganego wierzchołka.
+
+W przypadku błędnego numeru wierzchołka program ma wypisać komunikat: BŁĄD i ma zakończyć działanie.
+*/
+namespace Zad._1
+{
+    class MainClass
+    {
+
+        static void Main()
+        {
+            int vertex = 0;
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length][];
+            matrix[0] = new string[0];
+            matrix[0] = pre_matrix;
+            for (int i = 1; i < matrix.Length; i++)
+            {
+                matrix[i] = new string[vertex];
+                matrix[i] = Console.ReadLine().Split(' ');
+                vertex += 1;
+            }
+            int peek = Convert.ToInt32(Console.ReadLine());
+            sprawdz(peek - 1, matrix);
+        }
+        public static void matrix_remove(int peek, string[][] matrix)
+        {
+            int second_vertex = 0;
+            string[][] second_matrix = new string[matrix.Length-1][];
+            for (int i = 0; i < second_matrix.Length; i++)
+            {
+                second_matrix[i] = new string[second_matrix.Length];
+                for (int j = 0; j < second_matrix[i].Length; j++)
+                {
+                    if (i >= peek)
+                    {
+                        second_matrix[i][j] = matrix[i + 1][j + 1];
+                        
+                    }
+                    else
+                    {
+                        second_matrix[i][j] = matrix[i][j];
+                        
+                    }
+                }
+            }
+            for(int i = 0; i < second_matrix.Length; i++)
+            {
+                for(int j = 0; j < second_matrix[i].Length;j++)
+                {
+                    if (j == second_matrix.Length - 1)
+                    {
+                        Console.Write(second_matrix[i][j]);
+                    }
+                    else
+                    {
+                        Console.Write(second_matrix[i][j] + " ");
+                    }
+                }
+                Console.WriteLine();
+            }
+
+        }
+        public static void sprawdz(int peek, string[][] matrix)
+        {
+            if (peek < 0 || peek >= matrix.Length)
+            {
+                Console.WriteLine("BŁĄD");
+            }
+            else
+            {
+                matrix_remove(peek, matrix);
+            }
+        }
+
+    }
+}
