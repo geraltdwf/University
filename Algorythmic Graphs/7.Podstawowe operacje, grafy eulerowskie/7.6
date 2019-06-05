@@ -1,0 +1,131 @@
+using System;
+using System.Collections;
+/*
+Napisz program, który sprawdzi czy graf nieskierowany G podany przez użytkownika poprzez macierz sąsiedztwa jest:
+
+Eulerowski
+Półeulerowski
+Nieeulerowski
+Niespójny
+Dane testowe są grafami nieskierowanymi.
+*/
+namespace Graf_Eu
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            int vertex = 0;
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length][];
+            matrix[0] = pre_matrix;
+            vertex += 1;
+            int[] deg = new int[matrix.Length];
+            deg_fill(deg);
+            for (int i = 1; i < pre_matrix.Length; i++)
+            {
+                matrix[i] = new string[vertex];
+                matrix[i] = Console.ReadLine().Split(' ');
+                vertex += 1;
+            }
+            bool[,] visited_vertex = new bool[matrix.Length, matrix.Length];
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    visited_vertex[i, j] = false;
+                }
+            }
+            spojnosc(matrix, visited_vertex, deg); // sprawdz czy jest spojny
+        }
+        public static void deg_fill(int[]deg)
+        {
+            for(int i = 0; i < deg.Length; i++)
+            {
+                deg[i] = 0;
+            }
+        }
+        public static void euler_check(int[]deg)
+        {
+            int open_path = 2;
+            int min_path = 0;
+            bool euler_graph = false;       
+            for(int i = 0; i < deg.Length; i++)
+            {
+                if(deg[i]%2==0)
+                {
+                    euler_graph = true; // zly kod
+                }
+                else if(deg[i]%2!=0)
+                {
+                    min_path += 1;
+                    euler_graph = false;
+                   
+                }
+            }
+            if(euler_graph == false && min_path <= open_path)
+            {
+                Console.WriteLine("Graf jest półeulerowski");
+            }
+            else if(euler_graph == true)
+            {
+                Console.WriteLine("Graf jest eulerowski");
+            }
+            else
+            {
+                Console.WriteLine("Graf nie jest eulerowski");
+            }
+        }
+        public static void euler(string[][]matrix, bool [,]visited, int[]deg)
+        {
+
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    if (matrix[i][j] == "1" && visited[i, j] == false)
+                    {
+                        deg[i] += 1;
+                    }
+                }
+            }
+            euler_check(deg);
+        }
+       
+        
+        public static void spojnosc(string[][] matrix, bool[,] visited, int[]deg)
+        {
+            bool[] connectivity = new bool[matrix.Length]; // tablica do sprawdzenia spójności grafu
+
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                for (int j = 0; j < matrix[i].Length; j++)
+                {
+                    if (matrix[i][j] == "1")
+                    {
+                        connectivity[i] = true; // Jezeli w danym calym wierszu/kolumnie wystepuje krawedz
+                        j = matrix.Length - 1; // Przejdz na koniec petli
+                    }
+
+
+                }
+            }
+            for (int i = 0; i < connectivity.Length; i++)
+            {
+                if (connectivity[i] == false)
+                {
+
+                    Console.WriteLine("Graf jest niespójny");
+                    break;
+                }
+                else
+                {
+                    euler(matrix, visited, deg);
+                    break;
+                }
+            }
+
+        }
+    }
+}
