@@ -1,0 +1,153 @@
+using System;
+/*
+Napisz program, który pobierze od użytkownika macierz sąsiedztwa grafu G (wierzchołki numerujemy od jedynki), a następnie wyświetli następujące informacje (każda informacja w osobnej linii):
+
+Ilość wierzchołków
+Ilość krawędzi
+Ciąg stopni (nieposortowane)
+Średni stopień grafu
+Informacja czy graf jest pełny/cykl/ścieżka/drzewo/nie należy do żadnych
+*/
+
+public class MainClass
+{
+   
+    public static void Main()
+    {
+
+         int edge = 0;
+        int vertex = 0;
+        float avr_deg = 0;
+        string []pre_matrix = Console.ReadLine().Split(' '); // Pierwszy wiersz macierz
+        string [][] matrix = new string[pre_matrix.Length][]; // Utworzenie macierzy - incijacia
+        int[] deg = new int[pre_matrix.Length]; // Stopnie wierzcholkow
+        matrix[0] = new string[0]; // Utworzenie macierzy glownej, kolejne wiersze
+        matrix[0] = pre_matrix;
+        vertex += 1;
+        for (int i = 1; i < matrix.Length; i++)
+        {
+            matrix[i] = new string[vertex];
+            matrix[i] = Console.ReadLine().Split(' '); // kolejne wartosci macierzt
+            vertex += 1;
+        }
+        for (int i = 0; i < matrix.Length; i++)
+        {
+            for (int j = 0; j < matrix[i].Length; j++)
+            {
+                if ((matrix[i][j] == "1"))
+                {
+                    edge += 1;
+                    deg[i] += 1;
+             
+                }
+            }
+            avr_deg += deg[i];
+        }
+        edge /= 2;
+        Console.WriteLine($"Ilość wierzchołków: {vertex}");
+        Console.WriteLine($"Ilość krawędzi: {edge}");
+        Console.Write("Stopnie wierzchołków: ");
+        for(int i = 0; i < pre_matrix.Length; i++)
+        {
+            if (i < pre_matrix.Length - 1)
+            {
+                Console.Write(deg[i] + " ");
+            }
+            else
+            {
+                Console.Write(deg[i]);
+            }
+        }
+        Console.WriteLine();
+        Console.WriteLine($"Średni stopień: {avr_deg/vertex}");
+        sprawdz(vertex, edge, deg, matrix);
+        
+
+
+
+    }
+    public static void sprawdz(int vertex, int edge, int[] deg, string[][]matrix) // Sprawdzanie grafow
+    {
+        bool b1 = false;
+        int deg_min = 2; // minimum do cyklu deg_min >= 2
+        int deg_m = 2; // min sciezka
+        int []path = new int[matrix.Length];
+        for (int i = 0; i < vertex - 1; i++)
+        {
+            if (deg[i] == vertex-1)
+            {
+                b1 = true;
+            }
+            else
+            {
+                b1 = false;
+            }
+        }
+        if (b1 == true)
+        {
+            Console.Write("Jest to graf pełny.");
+        }
+        else if(b1 == false)
+        {
+            for(int k = 0; k < vertex-1; k++)
+            {
+                if(deg[k] < deg_m)
+                {
+                    deg_m = deg[k];
+                }
+              
+            }
+            if (deg_m >= deg_min)
+            {
+                //k = vertex - 1; // nie pamietam po co to napisalem
+
+                if (matrix[0][vertex - 1] == "1" && matrix[vertex - 1][0] == "1")
+                {
+                    Console.Write("Jest to cykl.");
+
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    for (int i = 0; i < matrix.Length; i++)
+                    {
+                        for (int j = 0; j < matrix[i].Length; j++)
+                        {
+                            if ((deg[i] > 2) && (matrix[0][vertex - 1] != "1" && matrix[vertex - 1][0] != "1"))
+                            {
+                                b1 = true;
+
+                            }
+                        }
+                    }
+                    if (b1 == true)
+                    {
+                        Console.Write("Jest to drzewo.");
+                        break;
+
+                    }
+                    if (matrix[0][vertex - 1] != "1" && matrix[vertex - 1][0] != "1")
+                    {
+                        Console.Write("Jest to ścieżka.");
+                        break;
+
+                    }
+                    else
+                    {
+                        Console.Write("Graf nie należy do żadnej z podstawowych klas.");
+                        break;
+
+                    }
+                }
+               
+            }
+
+
+
+        }
+        
+        
+    }
+}
