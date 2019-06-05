@@ -1,0 +1,166 @@
+using System;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
+
+/*
+Napisz program, który pobiera nieskierowany graf spójny podany jako lista sąsiedztwa, a następnie sprawdza, czy dany graf jest dwudzielny. Jeżeli graf jest dwudzielny, to program ma wypisać partycje dwudzielności (uporządkowane rosnąco) tego grafu.
+
+Zakładamy, że zawsze wypisujemy najpierw mniejszą z partycji grafu dwudzielnego.
+*/
+namespace Adjacency_list_8._1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<int, List<string>> adjacency_list = new Dictionary<int, List<string>>();
+            int i = 0;
+            string[] matrix;
+            matrix = Console.ReadLine().TrimEnd().Split(' ');
+            matrix[i].TrimEnd();
+            adjacency_list[i] = new List<string>();
+            adjacency_list[i] = matrix.ToList();
+            i++;
+            while (!string.IsNullOrEmpty(matrix[0]))
+            {
+                try
+                {
+                    matrix = Console.ReadLine().TrimEnd().Split(' ');
+                    adjacency_list[i] = new List<string>();
+                    adjacency_list[i] = matrix.ToList();
+                    i++;
+                }
+                catch (NullReferenceException)
+                {
+                    break;
+                }
+            }
+            color_table(adjacency_list);
+        }
+     
+        public static void color_table(Dictionary<int, List<string>> adjacency_list)
+        {            
+            int[] color_t = new int[adjacency_list.Count];
+            for(int i = 0; i < adjacency_list.Count;i++)
+            {
+                color_t[i] = 0;
+            }
+            bipartite_check(color_t, adjacency_list);
+        }
+        public static void partite_outpout(bool isBipartite, ArrayList firstPart, ArrayList secondPart)
+        {
+            firstPart.Sort();
+            secondPart.Sort();
+            if(isBipartite == true)
+            {
+                Console.WriteLine("Graf jest dwudzielny");
+                Console.Write("Pierwsza partycja: ");
+                for (int i = 0; i <  firstPart.Count; i ++)
+                {
+                    if (i == firstPart.Count - 1)
+                    {
+                        Console.Write(firstPart[i]);
+                    }
+                    else
+                    {
+                        Console.Write(firstPart[i] + " ");
+                    }
+                }
+                Console.WriteLine();
+                Console.Write("Druga partycja: ");
+                for (int i = 0; i < secondPart.Count; i ++)
+                {
+                    if (i == secondPart.Count - 1)
+                    {
+                        Console.Write(secondPart[i]);
+                    }
+                    else
+                    {
+                        Console.Write(secondPart[i] + " ");
+                    }
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("Graf nie jest dwudzielny");
+            }
+        }
+        
+        public static void bipartite_check(int[]color, Dictionary<int, List<string>> adjacency_list)
+        {
+            bool isBipartite = true;
+            ArrayList DFS_stos = new ArrayList();
+            ArrayList first_part = new ArrayList();
+            ArrayList second_part = new ArrayList();
+            for(int i = 0; i<adjacency_list.Count; i++)
+            {
+                if (color[i] == 0)
+                {
+                    color[i] = 1;
+                    DFS_stos.Add(i+1);
+                    first_part.Add((i + 1));
+                    while (DFS_stos.Count != 0)
+                    {
+                      
+                        
+                        for (int j = 0; j < adjacency_list.Count; j++)
+                        {
+
+                            if (adjacency_list[i].Contains((j + 1).ToString())) 
+                            {
+                                if (!first_part.Contains(j + 1) && !second_part.Contains(j + 1))
+                                {
+                                    second_part.Add(j + 1);
+                                }
+                                if (color[j] == 0)
+                                {
+                                    color[j] = -1;
+
+                                }
+  
+                            }
+                            else if (!adjacency_list[i].Contains((j + 1).ToString()) == false)
+                            {                                                               
+                                    continue;                               
+                            }
+                            else
+                            {                          
+                                first_part.Add((j + 1));
+                                if (color[j] == 0)
+                                {
+                                    color[j] = 1;                                 
+                                }                                                                                            
+                            }                            
+                       }
+                        
+                        DFS_stos.Remove(i+1);
+                    }
+                }
+            }
+            isBipartite = check_graph(color, adjacency_list);
+            partite_outpout(isBipartite, first_part, second_part);
+
+
+        }
+        public static bool check_graph(int[] color, Dictionary<int, List<string>> adjacency_list)
+        {
+            bool isBipartite = true;
+            for(int i = 0; i < adjacency_list.Count-1;i++)
+            {
+                for(int j = 0; j < adjacency_list.Count-1;j++)
+                {
+                    if(color[i] == color[j] && i!=j && adjacency_list[i].Contains((j+1).ToString())==true)
+                    {
+                        
+                        isBipartite = false;
+                    }
+                }
+            }
+            return isBipartite;
+        }
+    }
+}
