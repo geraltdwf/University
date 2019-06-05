@@ -1,0 +1,62 @@
+using System;
+/*
+Napisz program, który wczyta od użytkownika macierz sasiędztwa, a następnie numer wierzchołka (oznaczmy go jako a). Wynikiem programu ma być wypisanie sąsiadów wierzchołka a.
+
+W przypadku błędnych danych (mowa tutaj o numerze wierzchołka) program ma wypisać komunikat BŁĄD!!! oraz ma zakończyć działanie.
+namespace Zad._1
+*/
+{
+    class MainClass
+    {
+
+        static void Main()
+        {
+            int vertex = 0;
+            string[] pre_matrix = Console.ReadLine().Split(' ');
+            string[][] matrix = new string[pre_matrix.Length][];
+            matrix[0] = new string[0];
+            matrix[0] = pre_matrix;
+            for (int i = 1; i < matrix.Length; i++)
+            {
+                matrix[i] = new string[vertex];
+                matrix[i] = Console.ReadLine().Split(' ');
+                vertex += 1;
+            }
+
+            int vertex_nr = Convert.ToInt32(Console.ReadLine());
+            if (vertex_nr > matrix.Length + 1 || vertex_nr <= 0)
+            {
+                Console.WriteLine("BŁĄD");
+            }
+            else
+            {
+                Vertex_chain(matrix, vertex_nr);
+            }
+
+
+
+        }
+        public static int Vertex_chain(string[][] matrix, int vertex_nr)
+        {
+            int i = 0;
+            int[] array = new int[0];
+            for (int j = 0; j < matrix.Length; j++)
+            {
+                if (matrix[vertex_nr-1][j] == "1")
+                {
+                    Array.Resize(ref array, array.Length + 1);
+                    array[i] = j+1;
+                    i++;
+                }
+             
+            }
+            for (int k = 0; k < array.Length; k++)
+            {
+                Console.Write(array[k] + " ");
+            }
+            return 1;
+        }
+
+
+    }
+}
