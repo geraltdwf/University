@@ -1,1 +1,320 @@
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Substring
+{
+    public static class Ip_serach
+    {
+        public static void Ip(string[] ipString)
+        {
+            // Main function which contains all variables
+            string[] netMask = new string[4]; //Subnetwork mask code from the last 4 numbers of string
+            string[] ipV_4 = new string[4]; // adress from the first 4 numbers of string
+            string[] netMaskBinary = new string[4]; // converted from decimal to binar subnetwork code
+            string[] ipV_4Binary = new string[4]; // converted from decimal to binar ip code
+            string bin;
+            string[] broadcast; // broadcast which is needed for calculations - > range of available IP addresses(the last address)
+            string[]newIpCode; // this same what above with the different that this is needed for first of available IP addresses
+            for(int i = 0; i <= ipString.Length-1; i++)
+            {
+                if (i <= 3)
+                {
+                    ipV_4[i] = ipString[i];
+                    bin = BinConverter(ipV_4[i]);//Converting for binary numbers
+                    ipV_4Binary[i] = bin;
+                }
+                else if(i > 3)
+                {
+                    netMask[i-4] = ipString[i];
+                    bin = BinConverter(netMask[i - 4]);//Converting for binary numbers
+                    netMaskBinary[i-4] = bin;
+                }
+            }
+            bool buffor = CheckNetMask(netMask); //it's checks whether the subnetwork mask is correct
+            //if it is not correct returns false and the funcion is over
+            if (buffor == true)
+             {
+                string[] binStriny = LogicalAND(netMaskBinary, ipV_4Binary); // conjunction
+                newIpCode = IpAdressCalc(binStriny);            
+                broadcast = LogicalNOT(netMaskBinary); //convert 0 to 1 and 1 to 0
+                string []decimal_broadcast = IpAdressCalc(broadcast); 
+                int broadcast_variable = 0;
+                for(int i = 0; i < decimal_broadcast.Length; i++)
+                    {
+                      broadcast_variable = Convert.ToInt32(decimal_broadcast[i]) + Convert.ToInt32(newIpCode[i]);
+                      decimal_broadcast[i] = Convert.ToString(broadcast_variable);
+                      broadcast_variable = 0;     
+                    }
+                CIDR_Net(netMask); // getting ammounts of avaliable ip addresses
+                displayIP(decimal_broadcast, newIpCode); // display first, and last avaliable ip addresses
+
+
+            }
+            else
+            {
+                Console.WriteLine(0); // if the subnetworks is incorrect 
+            }
+          
+                
+        }
+
+        public static bool CheckNetMask(string []NetMask)
+        {
+            //this part of code has to check if the numbers of netmask are properly
+            //if not return false
+            bool isGood = false;
+            bool isSooGoood = false;
+            string[] numbers_1 = { "0","128", "192", "224", "240", "248", "252", "254", "255" };
+            string[] numbers_2 = { "0", "128", "192", "224", "240", "248", "252" };
+            for(int i = 0; i < NetMask.Length;i ++)
+            {
+                if (i <= 2)
+                {
+                    for (int j = 0; j < numbers_1.Length; j++)
+                    {
+                        if (NetMask[i] == numbers_1[j])
+                        {
+                            isGood = true;
+                        }
+                    }
+                    if(isGood == false)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    for(int j = 0; j < numbers_2.Length;j++)
+                    {
+                        if(NetMask[i] == numbers_2[j])
+                        {
+                            isSooGoood = true;
+                        }
+                    }
+                    if(isSooGoood == false)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        public static string BinConverter(string decimalNumber)
+        {
+            //Converting binary numbers to decimal numbers
+            if (decimalNumber == "0")
+            {
+                return "00000000";
+            }
+            else
+            {
+                int[] tab = new int[8];
+                int i = 7;
+                int zmienna;
+                string decimalNum = "";
+                while (decimalNumber != "0")
+                {
+                    tab[i] = Convert.ToInt32(decimalNumber)%2;
+                    i--;
+                    zmienna = Convert.ToInt32(decimalNumber) / 2;
+                    decimalNumber = Convert.ToString(zmienna);
+                   
+                }
+                for (int j = 0; j <tab.Length; j++)
+                {
+                    if (tab[j].Equals(' '))
+                    {
+                        decimalNum += "0";
+                    }
+                    else
+                    {
+                        decimalNum += Convert.ToString(tab[j]);
+                    }
+
+                }               
+                return decimalNum;
+            }
+        }
+        public static string[] LogicalAND(string []netMaskBinary, string[] ipV_4Binary )
+        {
+            string NetConv;
+            string ipVConv;
+            string[] highlights = new string[4];
+            string binaryString = "";
+            for(int i = 0; i < netMaskBinary.Length;i++)
+            {
+                NetConv = netMaskBinary[i];
+                ipVConv = ipV_4Binary[i];
+                for(int j = 0; j < NetConv.Length;j++)
+                {
+                    if (ipVConv[j] == '1' && NetConv[j] == '1')
+                    {
+                        binaryString += "1";
+                    }
+                    else
+                    {
+                        binaryString += "0";
+                    }
+                }
+                highlights[i] = binaryString;
+                binaryString = "";
+            }
+            return highlights;
+        
+        }
+        public static string[] LogicalNOT(string []netMaskBinary)
+        {
+            string[] broadcast = new string [4];
+            for (int i = 0; i < netMaskBinary.Length; i++ )
+            {
+                string sub_broad = "";
+                string convs = "";
+                convs = netMaskBinary[i];
+                for(int j = 0; j < convs.Length;j++)
+                {
+                    if(convs[j] == '1')
+                    {
+                        sub_broad += '0';
+                    }
+                    else
+                    {
+                        sub_broad += '1';
+                    }
+                }
+                broadcast[i] = sub_broad;
+
+            }
+
+
+                return broadcast;
+        }
+        public static string[] IpAdressCalc(string []binString)
+        {
+            //Converting binary ip address to decimal ip address
+            string[] newIp = new string[4];
+            double wynik = 0;
+            double baza = 2;
+            string numb;
+            int k = 0;
+            for (int i = 0; i < binString.Length; i++)
+            {
+                numb = binString[i];
+                for (int j = numb.Length - 1; j >= 0; j--)
+                {
+                    if (numb[j] == '1')
+                    {
+                        wynik += Math.Pow(baza, k);
+                        k++;
+                    }
+                    else
+                    {
+                        k++;
+                    }
+                }
+                k = 0;
+                newIp[i] = Convert.ToString(wynik);
+                wynik = 0;
+            }
+            return newIp;
+        }
+        public static void displayIP(string []decimal_broad, string []newIP)
+        {
+            string firstIP = "";
+            string secondIP = "";
+            int minus;
+            for(int i = 0; i < newIP.Length; i++)
+            {
+                if (i <= 2)
+                {
+                    firstIP += newIP[i];
+                    firstIP += '.';
+                    secondIP += decimal_broad[i];
+                    secondIP += '.';
+                }
+                else
+                {
+                    minus = Convert.ToInt32(newIP[i]) + 1;
+                    firstIP += Convert.ToString(minus);
+                    minus = 0;
+                    minus = Convert.ToInt32(decimal_broad[i]) - 1;
+                    secondIP += Convert.ToString(minus);
+                }
+            }
+            Console.Write(firstIP + " " + secondIP);
+            Console.WriteLine();
+        }
+        public static void CIDR_Net(string []netMask)
+        {
+            string[] numbers_1 = { "128", "192", "224", "240", "248", "252", "254", "255" };
+            string[] numbers_4 = { "128", "192", "224", "240", "248", "252" };
+            int CIDR = 0;
+            for(int i = 0; i < netMask.Length; i ++)
+            {
+                if (i <= 2)
+                {
+                    for (int j = 0; j < numbers_1.Length; j++)
+                    {
+                        if(netMask[i] == "0")
+                        {
+                            //CIDR++;
+                            break;
+                        }
+                        else if(netMask[i] == numbers_1[j] && netMask[i] != "255")
+                        {
+                            CIDR++;
+                            break;
+                        }
+                        else
+                        {
+                            CIDR++;
+                        }
+                        
+                    }
+                }
+                else if(i == 3)
+                {
+                    for(int j =0 ; j < numbers_4.Length; j++)
+                    {
+                        if (netMask[i] == "0")
+                        {
+                            //CIDR++;
+                            break;
+                        }
+                        else if(netMask[i] == numbers_1[j])
+                        {
+                            CIDR++;
+                            break;
+                        }
+                        else
+                        {
+                            CIDR++;
+                        }
+                    }
+                }
+            }
+            double power = Convert.ToDouble(CIDR);
+            double n = Math.Pow(2, (32-CIDR)) - 2;
+            Console.WriteLine(n);
+        }
+    }
+   
+    class Program
+    { 
+        static void Main(string[] args)
+        {
+            int x = int.Parse(Console.ReadLine());
+            if(x > 0 & x <= 33)
+            {
+                for(int i = 0; i < x ;i++)
+                {
+                    string[] ipString = Console.ReadLine().Trim().Split(' ');
+                    Ip_serach.Ip(ipString);
+                }
+            }
+        }
+    }
+}
